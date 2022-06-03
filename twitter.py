@@ -29,18 +29,18 @@ cg = CoinGeckoAPI()
 container = st.container()
 
 
-
+st.title("The Real Crypto Twitter")
 st.sidebar.title("Options")
-option = st.sidebar.selectbox("What are you looking for?", ("Crypto Tweeter Users", "Tweets", "News", "Reddit", "Tweet Sentiment"))
+option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Tweets", "News", "Reddit", "Tweet Sentiment"))
 
 st.header(option)
 
 
-if option == "Crypto Tweeter Users":
+if option == "Search Defi":
     user = st.sidebar.text_input("Enter a Twitter username")
-    st.subheader("Crypto Users")
+    st.subheader("Defi Traders")
     # tweets = api.user_timeline(screen_name=user, count=limit, tweet_mode='extended')
-    tweeter = tweepy.Cursor(api.user_timeline, screen_name=user, count=200, tweet_mode='extended', media_fields="attachments.media_keys").items(limit)
+    tweeter = tweepy.Cursor(api.user_timeline, screen_name=user, count=200, tweet_mode='extended').items(limit)
     
     
     for tweet in tweeter:
@@ -51,9 +51,12 @@ if option == "Crypto Tweeter Users":
                     symbol = word[1:]
                     st.image(tweet.user.profile_image_url)
                     st.subheader(tweet.user.screen_name)
-                    st.write(f"crypto ticker {symbol}")
-                    st.markdown(tweet.full_text)
                     st.markdown(tweet.created_at)
+                    st.write(f"crypto ticker {symbol}")
+                    if not tweet.truncated:
+                        st.markdown(tweet.full_text)
+                    else:
+                        st.markdown(tweet.extended['full_text'])
                     
     
     # hashtags = st.sidebar.text_input("Enter a hashtag # ")
