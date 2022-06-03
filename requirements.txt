@@ -6,3 +6,4 @@ pycoingecko
 tweepy
 discord.py
 numpy
+python-dotenv
