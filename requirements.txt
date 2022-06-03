@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+requests
+pycoingecko
+tweepy
+discord.py
+numpy
