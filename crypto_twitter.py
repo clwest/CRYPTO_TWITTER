@@ -36,6 +36,8 @@ option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Twee
 st.header(option)
 
 
+
+
 if option == "Search Defi":
     user = st.sidebar.text_input("Enter a Twitter username")
     st.subheader("Defi Traders")
@@ -57,7 +59,7 @@ if option == "Search Defi":
                         st.markdown(tweet.full_text)
                     else:
                         st.markdown(tweet.extended['full_text'])
-                    
+        coin = st.sidebar.text_input(cg.get_price('btc', vs_currencies="usd"))
     
     # hashtags = st.sidebar.text_input("Enter a hashtag # ")
     # tweets = tweepy.Cursor(api.search_tweets, q=hashtags, count=200, tweet_mode='extended').items(limit)

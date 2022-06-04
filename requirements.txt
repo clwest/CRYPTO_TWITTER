@@ -7,3 +7,4 @@ tweepy
 discord.py
 numpy
 python-dotenv
+requests
