@@ -35,7 +35,7 @@ container = st.container()
 
 st.title("The Real Crypto Twitter")
 st.sidebar.title("Options")
-option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Tweets", "News", "Top Defi Dapps", "Tweet Sentiment"))
+option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Tweets", "News", "Top Defi Dapps", "DeFi Protocols"))
 
 st.header(option)
 
@@ -43,7 +43,7 @@ st.header(option)
 
 
 if option == "Search Defi":
-    user = st.sidebar.text_input("Enter a Twitter username")
+    user = st.sidebar.text_input("Enter a Twitter username", value="defi_dad")
     st.subheader("Defi Traders")
     # tweets = api.user_timeline(screen_name=user, count=limit, tweet_mode='extended')
     tweeter = tweepy.Cursor(api.user_timeline, screen_name=user, count=200, tweet_mode='extended').items(limit)
@@ -71,7 +71,7 @@ if option == "Search Defi":
 
 if option == "Tweets":
 
-    tweets = st.sidebar.text_input("What tokens are you looking for?")
+    tweets = st.sidebar.text_input("What tokens are you looking for?", value="ETH")
     st.subheader("Crypto Tweets")
     # tweets = api.user_timeline(screen_name=user, count=limit, tweet_mode='extended')
     tweets = tweepy.Cursor(api.search_tweets, q=keywords, count=5, tweet_mode='extended', lang='en')
@@ -96,27 +96,32 @@ if option == "Tweets":
     # st.markdown(tweets.full_text)
 
 
-# if option == " Tweet Sentiment":
-#     exchanges = ['pancakeswap', 'curve', 'makerdao', 'uniswap','Compound', 'AAVE','sushiswap','anchor']
+if option == "DeFi Protocols":
+    
+    defi_pair = st.sidebar.text_input("Select a pair", value="crv-dai")
+    defi_apr = st.sidebar.text_input("Select a APR", value=10)
+    pair = ['crv','DAI']
 
-#     hist = [dft.getProtocol(exchange)[1] for exchange in exchanges]
-#     df = pd.concat(hist, axis=1)
-#     st.dataframe(df)
-#     df.columns = exchanges
-#     st.plotly_chart(figsize=(12,6), use_container_width=True)
+    st.subheader("DeFi Dick Munch")
+    apr = 10
+
+    st.dataframe(dft.farmSimulate(pair, apr, start='2022-05-05'))
+
+
 
 
 if option == "Top Defi Dapps":
     df = dft.getProtocols()
     fig, ax = plt.subplots(figsize=(12,6))
-    n = 50 # quantity to show
+    n = 5 # quantity to show
+    pools = st.sidebar.text_input(f"Select the number of pools {n}")
     top = df.sort_values('tvl', ascending=False).head(n)
     chains = top.groupby('chain').size().index.values.tolist()
     for chain in chains:
         filtro = top.loc[top.chain==chain]
         ax.bar(filtro.index, filtro.tvl, label=chain)
     
-    topDefi = ax.set_title(f'Top {n} dApp TVL, groupBy dApp main Chain', fontsize=14)
+    ax.set_title(f'Top {n} dApp TVL, groupBy dApp main Chain', fontsize=14)
     ax.grid(alpha=0.5)
     plt.legend()
     plt.xticks(rotation=90)
