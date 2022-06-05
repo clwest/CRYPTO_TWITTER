@@ -3,10 +3,13 @@ import streamlit as st
 import pandas as pd
 import os
 import json
+import defi.defi_tools as dft
 from dotenv import load_dotenv
 from csv import writer
 from pycoingecko import CoinGeckoAPI
 import tweepy
+import matplotlib.pyplot as plt
+
 load_dotenv()
 
 # To set your environment variables in your terminal run the following line:
@@ -18,6 +21,7 @@ access_token = os.getenv("TWITTER_ACCESS_TOKEN")
 access_token_secret = os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
 bearer_token = os.getenv("TWITTER_BEARER_TOKEN")
 
+# The Twitter API might be better to follow along with, feel there is more control there!
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
@@ -31,7 +35,7 @@ container = st.container()
 
 st.title("The Real Crypto Twitter")
 st.sidebar.title("Options")
-option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Tweets", "News", "Reddit", "Tweet Sentiment"))
+option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Tweets", "News", "Top Defi Dapps", "Tweet Sentiment"))
 
 st.header(option)
 
@@ -43,8 +47,6 @@ if option == "Search Defi":
     st.subheader("Defi Traders")
     # tweets = api.user_timeline(screen_name=user, count=limit, tweet_mode='extended')
     tweeter = tweepy.Cursor(api.user_timeline, screen_name=user, count=200, tweet_mode='extended').items(limit)
-    
-    
     for tweet in tweeter:
         if '$' in tweet.full_text:
             words = tweet.full_text.split(" ")
@@ -59,8 +61,7 @@ if option == "Search Defi":
                         st.markdown(tweet.full_text)
                     else:
                         st.markdown(tweet.extended['full_text'])
-        coin = st.sidebar.text_input(cg.get_price('btc', vs_currencies="usd"))
-    
+
     # hashtags = st.sidebar.text_input("Enter a hashtag # ")
     # tweets = tweepy.Cursor(api.search_tweets, q=hashtags, count=200, tweet_mode='extended').items(limit)
     
@@ -95,8 +96,28 @@ if option == "Tweets":
     # st.markdown(tweets.full_text)
 
 
-if option == " Tweet Sentiment":
-    st.subheader("Crypto Sentiment")
+# if option == " Tweet Sentiment":
+#     exchanges = ['pancakeswap', 'curve', 'makerdao', 'uniswap','Compound', 'AAVE','sushiswap','anchor']
 
-if option == "Coins":
-    st.subheader("Crypto Coins")
+#     hist = [dft.getProtocol(exchange)[1] for exchange in exchanges]
+#     df = pd.concat(hist, axis=1)
+#     st.dataframe(df)
+#     df.columns = exchanges
+#     st.plotly_chart(figsize=(12,6), use_container_width=True)
+
+
+if option == "Top Defi Dapps":
+    df = dft.getProtocols()
+    fig, ax = plt.subplots(figsize=(12,6))
+    n = 50 # quantity to show
+    top = df.sort_values('tvl', ascending=False).head(n)
+    chains = top.groupby('chain').size().index.values.tolist()
+    for chain in chains:
+        filtro = top.loc[top.chain==chain]
+        ax.bar(filtro.index, filtro.tvl, label=chain)
+    
+    topDefi = ax.set_title(f'Top {n} dApp TVL, groupBy dApp main Chain', fontsize=14)
+    ax.grid(alpha=0.5)
+    plt.legend()
+    plt.xticks(rotation=90)
+    st.pyplot(fig)
