@@ -43,7 +43,7 @@ st.header(option)
 
 
 if option == "Search Defi":
-    user = st.sidebar.text_input("Enter a Twitter username", value="defi_dad")
+    user = st.sidebar.text_input("Enter a Twitter username", value="bantg")
     st.subheader("Defi Traders")
     # tweets = api.user_timeline(screen_name=user, count=limit, tweet_mode='extended')
     tweeter = tweepy.Cursor(api.user_timeline, screen_name=user, count=200, tweet_mode='extended').items(limit)
@@ -96,24 +96,10 @@ if option == "Tweets":
     # st.markdown(tweets.full_text)
 
 
-if option == "DeFi Protocols":
-    
-    defi_pair = st.sidebar.text_input("Select a pair", value="crv-dai")
-    defi_apr = st.sidebar.text_input("Select a APR", value=10)
-    pair = ['crv','DAI']
-
-    st.subheader("DeFi Dick Munch")
-    apr = 10
-
-    st.dataframe(dft.farmSimulate(pair, apr, start='2022-05-05'))
-
-
-
-
 if option == "Top Defi Dapps":
     df = dft.getProtocols()
     fig, ax = plt.subplots(figsize=(12,6))
-    n = 5 # quantity to show
+    n = 50 # quantity to show
     pools = st.sidebar.text_input(f"Select the number of pools {n}")
     top = df.sort_values('tvl', ascending=False).head(n)
     chains = top.groupby('chain').size().index.values.tolist()
@@ -126,3 +112,14 @@ if option == "Top Defi Dapps":
     plt.legend()
     plt.xticks(rotation=90)
     st.pyplot(fig)
+
+# if option == "DeFi Protocols":
+    
+#     defi_pair = st.sidebar.text_input("Select a pair", value='huobi-token','tether')
+#     defi_apr = st.sidebar.text_input("Select a APR", value=10)
+#     pair = ['crv','DAI']
+
+#     st.subheader("DeFi Protocols")
+#     apr = 10
+
+#     st.dataframe(dft.farmSimulate(pair, apr, start='2022-05-05'))
