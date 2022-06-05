@@ -33,9 +33,10 @@ cg = CoinGeckoAPI()
 container = st.container()
 
 
-st.title("The Real Crypto Twitter")
+st.header("Donkey Betz Real Crypto Twitter")
+st.markdown("This site is under constant development, Donkey's work a little slower than usual!")
 st.sidebar.title("Options")
-option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Tweets", "News", "Top Defi Dapps", "DeFi Protocols"))
+option = st.sidebar.selectbox("What are you looking for?", ("Search Defi", "Tweets", "Coins", "Top Defi Dapps", "Historical Crypto Prices"))
 
 st.header(option)
 
@@ -100,7 +101,7 @@ if option == "Top Defi Dapps":
     df = dft.getProtocols()
     fig, ax = plt.subplots(figsize=(12,6))
     n = 50 # quantity to show
-    pools = st.sidebar.text_input(f"Select the number of pools {n}")
+    pools = st.sidebar.markdown(f"Showing the top 50 pools and chains")
     top = df.sort_values('tvl', ascending=False).head(n)
     chains = top.groupby('chain').size().index.values.tolist()
     for chain in chains:
@@ -113,13 +114,26 @@ if option == "Top Defi Dapps":
     plt.xticks(rotation=90)
     st.pyplot(fig)
 
-# if option == "DeFi Protocols":
+if option == "Historical Crypto Prices":
     
-#     defi_pair = st.sidebar.text_input("Select a pair", value='huobi-token','tether')
-#     defi_apr = st.sidebar.text_input("Select a APR", value=10)
-#     pair = ['crv','DAI']
-
-#     st.subheader("DeFi Protocols")
-#     apr = 10
-
-#     st.dataframe(dft.farmSimulate(pair, apr, start='2022-05-05'))
+    ticker = st.sidebar.text_input(f"Enter a crypto ticker", value="ethereum")
+    
+    df = dft.geckoHistorical(ticker)
+    st.table(df)
+    
+if option == "Pools":
+    df = dft.pcsTokens()
+    st.table(df)
+    
+    dft.value_f, iloss = dft.iloss_simulate('cake','bnb', value=1000, base_pct_chg=50, quote_pct_chg=-25)
+    
+if option == "Coins":
+    page = 1
+    per_page = 250
+    url = "https://api.coingecko.com/api/v3/coins/markets"
+    params = {"vs_currency":"usd", "order":"market_cap_desc", "per_page":per_page, "page":page}
+    r = requests.get(url, params).json()
+    df = pd.DataFrame(r)
+    df.set_index('symbol', inplace=True)
+    st.table(df)
+    
